@@ -51,12 +51,14 @@
 
 - (void) registerForKeyboardNotifications
 {
+#if !TARGET_OS_TV
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     [notificationCenter addObserver:self selector:@selector(_keyboardWillShowNotification:) name:UIKeyboardWillShowNotification object:nil];
     [notificationCenter addObserver:self selector:@selector(_keyboardDidShowNotification:) name:UIKeyboardDidShowNotification object:nil];
     [notificationCenter addObserver:self selector:@selector(_keyboardWillHideNotification:) name:UIKeyboardWillHideNotification object:nil];
     [notificationCenter addObserver:self selector:@selector(_keyboardDidHideNotification:) name:UIKeyboardDidHideNotification object:nil];
     [notificationCenter addObserver:self selector:@selector(_keyboardWillChangeFrameNotification:) name:UIKeyboardWillChangeFrameNotification object:nil];
+#endif
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
@@ -153,6 +155,7 @@
 
 - (void)_keyboardWillChangeFrameNotification:(NSNotification*)notification
 {
+#if !TARGET_OS_TV
     if(self.window)
     {
         return;
@@ -164,6 +167,7 @@
     [_delegate ObservingInputAccessoryViewTempDidChangeFrame:self];
     
     [self invalidateIntrinsicContentSize];
+#endif
 }
 
 @end

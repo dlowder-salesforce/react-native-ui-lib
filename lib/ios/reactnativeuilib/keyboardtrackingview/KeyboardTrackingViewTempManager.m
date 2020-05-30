@@ -10,7 +10,9 @@
 #import "ObservingInputAccessoryViewTemp.h"
 #import "UIResponder+FirstResponderTemp.h"
 
+#if !TARGET_OS_TV
 #import <WebKit/WebKit.h>
+#endif
 #import <React/RCTScrollView.h>
 #import <React/RCTBridge.h>
 #import <React/RCTUIManager.h>
@@ -129,6 +131,7 @@ typedef NS_ENUM(NSUInteger, KeyboardTrackingScrollBehavior) {
     return subview;
 }
 
+#if !TARGET_OS_TV
 -(void)_swizzleWebViewInputAccessory:(WKWebView*)webview
 {
     UIView* subview;
@@ -157,6 +160,7 @@ typedef NS_ENUM(NSUInteger, KeyboardTrackingScrollBehavior) {
     object_setClass(subview, _newClass);
     [subview reloadInputViews];
 }
+#endif
 
 -(void)layoutSubviews
 {
@@ -236,10 +240,12 @@ typedef NS_ENUM(NSUInteger, KeyboardTrackingScrollBehavior) {
         {
             [self setupTextView:(UITextView*)subview];
         }
+#if !TARGET_OS_TV
         else if ([subview isKindOfClass:[WKWebView class]])
         {
             [self _swizzleWebViewInputAccessory:(WKWebView*)subview];
         }
+#endif
     }
     
     for (RCTScrollView *scrollView in rctScrollViewsArray)
@@ -483,7 +489,7 @@ typedef NS_ENUM(NSUInteger, KeyboardTrackingScrollBehavior) {
 {
     CGFloat bottomSafeArea = 0;
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_10_3
-    if (@available(iOS 11.0, *)) {
+    if (@available(iOS 11.0, tvOS 11.0, *)) {
         bottomSafeArea = self.superview ? self.superview.safeAreaInsets.bottom : self.safeAreaInsets.bottom;
     }
 #endif
