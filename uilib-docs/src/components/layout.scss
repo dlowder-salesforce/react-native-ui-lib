@@ -1,0 +1,30 @@
+@import "src/styles/constants";
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding-top: $headerHeight;
+
+  .main {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    border: 20px solid $white;
+    border-top: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  // .fill {
+  //   background: $primary;
+  // }
+
+  .content {
+    width: 100%;
+    &.with-navbar {
+      padding-left: $navbarWidth;
+    }
+  }
+}

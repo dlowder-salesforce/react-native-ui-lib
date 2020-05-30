@@ -1,8 +1,8 @@
-import {Navigation} from 'react-native-navigation';
-import HighlightOverlayViewScreen from './HighlightOverlayViewScreen';
-import SafeAreaSpacerViewScreen from './SafeAreaSpacerViewScreen';
-import WheelPickerViewScreen from './WheelPickerViewScreen';
+export function registerScreens(registrar) {
+  registrar('unicorn.nativeComponents.HighlightOverlayViewScreen', () => require('./HighlightOverlayViewScreen').default);
+  registrar('unicorn.nativeComponents.SafeAreaSpacerViewScreen', () => require('./SafeAreaSpacerViewScreen').default);
+  registrar('unicorn.nativeComponents.WheelPickerViewScreen', () => require('./WheelPickerViewScreen').default);
+  registrar('unicorn.nativeComponents.KeyboardTrackingViewScreen', () => require('./KeyboardTrackingViewScreen').default);
+  registrar('unicorn.nativeComponents.KeyboardInputViewScreen', () => require('./keyboardInput/KeyboardInputViewScreen').default);
+}
 
-Navigation.registerComponent('unicorn.nativeComponents.HighlightOverlayViewScreen', () => HighlightOverlayViewScreen);
-Navigation.registerComponent('unicorn.nativeComponents.SafeAreaSpacerViewScreen', () => SafeAreaSpacerViewScreen);
-Navigation.registerComponent('unicorn.nativeComponents.WheelPickerViewScreen', () => WheelPickerViewScreen);

@@ -1,13 +1,14 @@
 // TODO: deprecate passing an an object as a value, use label and value props separately
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Image, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import _ from 'lodash';
 import {Colors, Typography, ThemeManager} from '../../style';
 import {BaseComponent} from '../../commons';
 import Assets from '../../assets';
 import View from '../view';
 import Text from '../text';
+import Image from '../image';
 import TouchableOpacity from '../touchableOpacity';
 
 /**
@@ -41,13 +42,21 @@ class PickerItem extends BaseComponent {
      */
     isSelected: PropTypes.bool,
     /**
+     * Pass to change the selected icon
+     */
+    selectedIcon: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
+    /**
+     * Pass to change the selected icon color
+     */
+    selectedIconColor: PropTypes.string,
+    /**
      * Is the item disabled
      */
     disabled: PropTypes.bool,
     /**
      * Render custom item
      */
-    renderItem: PropTypes.func,
+    renderItem: PropTypes.elementType,
     /**
      * Callback for onPress action
      */
@@ -55,7 +64,7 @@ class PickerItem extends BaseComponent {
     /**
      * Callback for onLayout event
      */
-    onSelectedLayout: PropTypes.func,
+    onSelectedLayout: PropTypes.func
   };
 
   /* eslint-disable */
@@ -85,11 +94,14 @@ class PickerItem extends BaseComponent {
   }
 
   renderSelectedIndicator() {
-    const {isSelected, disabled} = this.props;
+    const {
+      isSelected,
+      disabled,
+      selectedIcon = Assets.icons.check,
+      selectedIconColor = ThemeManager.primaryColor
+    } = this.props;
     if (isSelected) {
-      return (
-        <Image style={[this.styles.checkIcon, disabled && this.styles.checkIconDisabled]} source={Assets.icons.check} />
-      );
+      return <Image source={selectedIcon} tintColor={disabled ? Colors.dark60 : selectedIconColor}/>;
     }
   }
 
@@ -119,12 +131,13 @@ class PickerItem extends BaseComponent {
         onLayout={isSelected ? this.onSelectedLayout : undefined}
         disabled={disabled}
         testID={testID}
+        {...this.extractAccessibilityProps()}
       >
         {renderItem ? renderItem(value, this.props, this.getLabel()) : this.renderItem()}
       </TouchableOpacity>
     );
   }
-  
+
   // TODO: deprecate the check for object
   onPress = () => {
     const {label, value, onPress} = this.props;
@@ -138,23 +151,17 @@ function createStyles() {
       height: 56.5,
       paddingHorizontal: 23,
       borderColor: Colors.rgba(Colors.dark10, 0.1),
-      borderBottomWidth: 1,
+      borderBottomWidth: 1
     },
     labelText: {
       ...Typography.text70,
       color: Colors.dark10,
       flex: 1,
-      textAlign: 'left',
+      textAlign: 'left'
     },
     labelTextDisabled: {
-      color: Colors.dark60,
-    },
-    checkIcon: {
-      tintColor: ThemeManager.primaryColor,
-    },
-    checkIconDisabled: {
-      tintColor: Colors.dark60,
-    },
+      color: Colors.dark60
+    }
   });
 }
 

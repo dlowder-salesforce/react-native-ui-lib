@@ -1,4 +1,4 @@
-// TODO: deprecate value allowing passing an object, allow only string or number
+// TODO: deprecate value allowing passing an object, separate between label and value props
 // TODO: extract picker labels from children in order to obtain the correct label to render (similar to NativePicker)
 
 import _ from 'lodash';
@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {BaseComponent} from '../../commons';
 import View from '../../components/view';
-import Modal from '../../screensComponents/modal';
+import Modal from '../modal';
 import Button from '../../components/button';
 import {TextField} from '../inputs';
 import * as PickerPresenter from './PickerPresenter';
@@ -59,15 +59,15 @@ class Picker extends BaseComponent {
      * Example:
      * renderPicker = (selectedItem) => {...}
      */
-    renderPicker: PropTypes.func,
+    renderPicker: PropTypes.elementType,
     /**
      * Render custom picker item
      */
-    renderItem: PropTypes.func,
+    renderItem: PropTypes.elementType,
     /**
      * Render custom picker modal (e.g ({visible, children, toggleModal}) => {...})
      */
-    renderCustomModal: PropTypes.func,
+    renderCustomModal: PropTypes.elementType,
     /**
      * Custom picker props (when using renderPicker, will apply on the button wrapper)
      */
@@ -98,7 +98,7 @@ class Picker extends BaseComponent {
     searchStyle: PropTypes.shape({
       color: PropTypes.string,
       placeholderTextColor: PropTypes.string,
-      selectionColor: PropTypes.string,
+      selectionColor: PropTypes.string
     }),
     /**
      * Placeholder text for the search input (only when passing showSearch)
@@ -111,7 +111,7 @@ class Picker extends BaseComponent {
     /**
      * Render custom search input (only when passing showSearch)
      */
-    renderCustomSearch: PropTypes.func,
+    renderCustomSearch: PropTypes.elementType,
     /**
      * Allow to use the native picker solution (different style for iOS and Android)
      */
@@ -119,7 +119,7 @@ class Picker extends BaseComponent {
     /**
      * Callback for rendering a custom native picker inside the dialog (relevant to native picker only)
      */
-    renderNativePicker: PropTypes.func,
+    renderNativePicker: PropTypes.elementType,
     /**
      * Pass props to the list component that wraps the picker options (allows to control FlatList behavior)
      */
@@ -139,6 +139,7 @@ class Picker extends BaseComponent {
     this.state = {
       value: props.value,
       selectedItemPosition: 0,
+      items: this.extractPickerItems(props)
     };
 
     if (props.mode === Picker.modes.SINGLE && Array.isArray(props.value)) {
@@ -148,15 +149,34 @@ class Picker extends BaseComponent {
       console.warn('Picker in MULTI mode must accept an array for value');
     }
 
-    if (props.useNativePicker && _.isPlainObject(props.value)) {
-      console.warn('UILib Picker: don\'t use object as value for native picker, use either string or a number');
-    }
+    // TODO: this warning should be replaced by the opposite
+    // we should warn user NOT to pass an object to the value prop
+    // if (props.useNativePicker && _.isPlainObject(props.value)) {
+    //   console.warn('UILib Picker: don\'t use object as value for native picker, use either string or a number');
+    // }
   }
 
   UNSAFE_componentWillReceiveProps(nexProps) {
     this.setState({
-      value: nexProps.value,
+      value: nexProps.value
     });
+  }
+
+  getAccessibilityInfo() {
+    const {placeholder} = this.props;
+    return {
+      accessibilityLabel: this.getLabel() ? `${placeholder}. selected. ${this.getLabel()}` : `Select ${placeholder}`,
+      accessibilityHint: this.getLabel()
+        ? 'Double tap to edit'
+        : `Goes to ${placeholder}. Suggestions will be provided`,
+      ...this.extractAccessibilityProps()
+    };
+  }
+
+  extractPickerItems(props) {
+    const {children} = props;
+    const items = React.Children.map(children, child => ({value: child.props.value, label: child.props.label}));
+    return items;
   }
 
   getLabel() {
@@ -170,7 +190,18 @@ class Picker extends BaseComponent {
     }
 
     const {getLabel} = this.props;
-    return _.isFunction(getLabel) ? getLabel(value) : _.get(value, 'label');
+    if (_.isFunction(getLabel)) {
+      return getLabel(value);
+    }
+
+    if (_.isPlainObject(value)) {
+      return _.get(value, 'label');
+    }
+
+    // otherwise, extract from picker items
+    const {items} = this.state;
+    const selectedItem = _.find(items, {value});
+    return _.get(selectedItem, 'label');
   }
 
   handlePickerOnPress = () => {
@@ -186,15 +217,16 @@ class Picker extends BaseComponent {
     const {value} = this.state;
     const newValue = _.xorBy(value, [item], 'value');
     this.setState({
-      value: newValue,
+      value: newValue
     });
   };
 
   cancelSelect = () => {
     this.setState({
-      value: this.props.value,
+      value: this.props.value
     });
     this.toggleExpandableModal(false);
+    _.invoke(this.props, 'topBarProps.onCancel');
   };
 
   onDoneSelecting = item => {
@@ -205,15 +237,15 @@ class Picker extends BaseComponent {
 
   onSearchChange = searchValue => {
     this.setState({
-      searchValue,
+      searchValue
     });
     _.invoke(this.props, 'onSearchChange', searchValue);
   };
 
   onSelectedItemLayout = ({
     nativeEvent: {
-      layout: {y},
-    },
+      layout: {y}
+    }
   }) => {
     this.setState({selectedItemPosition: y});
   };
@@ -227,12 +259,15 @@ class Picker extends BaseComponent {
 
       if (!showSearch || _.isEmpty(searchValue) || _.includes(_.lowerCase(childLabel), _.lowerCase(searchValue))) {
         const selectedValue = PickerPresenter.getItemValue({value, getItemValue});
+        const isSelected = PickerPresenter.isItemSelected(childValue, selectedValue);
         return React.cloneElement(child, {
-          isSelected: PickerPresenter.isItemSelected(childValue, selectedValue),
+          isSelected,
           onPress: mode === Picker.modes.MULTI ? this.toggleItemSelection : this.onDoneSelecting,
           getItemValue: child.props.getItemValue || getItemValue,
           onSelectedLayout: this.onSelectedItemLayout,
           renderItem: child.props.renderItem || renderItem,
+          accessibilityState: isSelected ? {selected: true} : undefined,
+          accessibilityHint: 'Double click to select this suggestion'
         });
       }
     });
@@ -250,7 +285,8 @@ class Picker extends BaseComponent {
       searchPlaceholder,
       renderCustomSearch,
       renderCustomModal,
-      listProps
+      listProps,
+      testID
     } = this.getThemeProps();
     const {showExpandableModal, selectedItemPosition} = this.state;
     const children = this.appendPropsToChildren(this.props.children);
@@ -259,7 +295,8 @@ class Picker extends BaseComponent {
       const modalProps = {
         visible: showExpandableModal,
         toggleModal: this.toggleExpandableModal,
-        children,
+        onSearchChange: this.onSearchChange,
+        children
       };
 
       return renderCustomModal(modalProps);
@@ -267,13 +304,14 @@ class Picker extends BaseComponent {
 
     return (
       <PickerModal
+        testID={`${testID}.modal`}
         visible={showExpandableModal}
         scrollPosition={selectedItemPosition}
         enableModalBlur={enableModalBlur}
         topBarProps={{
           ...topBarProps,
           onCancel: this.cancelSelect,
-          onDone: mode === Picker.modes.MULTI ? () => this.onDoneSelecting(this.state.value) : undefined,
+          onDone: mode === Picker.modes.MULTI ? () => this.onDoneSelecting(this.state.value) : undefined
         }}
         showSearch={showSearch}
         searchStyle={searchStyle}
@@ -291,7 +329,7 @@ class Picker extends BaseComponent {
     const {useNativePicker, renderPicker, customPickerProps, testID} = this.props;
 
     if (useNativePicker) {
-      return <NativePicker {...this.props} />;
+      return <NativePicker {...this.props}/>;
     }
 
     if (_.isFunction(renderPicker)) {
@@ -306,12 +344,13 @@ class Picker extends BaseComponent {
       );
     }
 
-    const textInputProps = TextField.extractOwnProps(this.props);
+    const textInputProps = TextField.extractOwnProps(this.getThemeProps());
     const label = this.getLabel();
     return (
       <TextField
         {...textInputProps}
-        enableErrors={false}
+        {...this.getAccessibilityInfo()}
+        importantForAccessibility={'no-hide-descendants'}
         value={label}
         expandable
         renderExpandable={this.renderExpandableModal}

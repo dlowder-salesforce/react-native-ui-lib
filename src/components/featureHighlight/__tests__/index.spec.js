@@ -1,4 +1,4 @@
-import {Constants} from '../../../helpers';
+import {updateConstants} from '../../../helpers/Constants';
 
 describe('FeatureHighlight', () => {
   let FeatureHighlight;
@@ -12,7 +12,7 @@ describe('FeatureHighlight', () => {
     it('massage should be placed above element positioned below screen\'s vertical center', () => {
       const uut = new FeatureHighlight({});
       uut.state = {
-        contentTopPosition: 0,
+        contentTopPosition: 0
       };
       uut.targetPosition = {left: 0, top: 500, width: 80, height: 80};
       uut.didLayout = true;
@@ -21,7 +21,7 @@ describe('FeatureHighlight', () => {
     it('massage should be placed below element positioned above screen\'s vertical center', () => {
       const uut = new FeatureHighlight({minimumRectSize: {width: 56, height: 56}, innerPadding: 10});
       uut.state = {
-        contentTopPosition: 0,
+        contentTopPosition: 0
       };
       uut.targetPosition = {left: 0, top: 200, width: 20, height: 20};
       uut.didLayout = true;
@@ -30,7 +30,7 @@ describe('FeatureHighlight', () => {
     it('massage should be placed below element positioned above screen\'s vertical center', () => {
       const uut = new FeatureHighlight({minimumRectSize: {width: 56, height: 56}, innerPadding: 10});
       uut.state = {
-        contentTopPosition: 0,
+        contentTopPosition: 0
       };
       uut.targetPosition = {left: 0, top: 200, width: 80, height: 80};
       uut.didLayout = true;
@@ -95,6 +95,9 @@ describe('FeatureHighlight', () => {
 
 function mockScreenDimentions() {
   // iPhone 8
-  Constants.screenWidth = 375;
-  Constants.screenHeight = 667;
+  const dimensions = {
+    screen: {height: 667, width: 375},
+    window: {height: 1000, width: 1000}
+  };
+  updateConstants(dimensions);
 }

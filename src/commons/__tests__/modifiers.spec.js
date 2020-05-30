@@ -7,7 +7,7 @@ describe('Modifiers', () => {
   SampleComponent.displayName = 'SampleComponent';
   SampleComponent.propTypes = {
     prop1: PropTypes.string,
-    prop2: PropTypes.number,
+    prop2: PropTypes.number
   };
 
   describe('extractColorValue', () => {
@@ -42,65 +42,53 @@ describe('Modifiers', () => {
     });
 
     it('should return take the last typography modifier prop in case there is more than one', () => {
-      expect(
-        uut.extractTypographyValue({
-          text40: true,
-          text70: true,
-        }),
-      ).toEqual(Typography.text70);
-      expect(
-        uut.extractTypographyValue({
-          text70: true,
-          text40: true,
-        }),
-      ).toEqual(Typography.text40);
-      expect(
-        uut.extractTypographyValue({
-          text40: true,
-          text70: false,
-        }),
-      ).toEqual(Typography.text40);
+      expect(uut.extractTypographyValue({
+        text40: true,
+        text70: true
+      }),).toEqual(Typography.text70);
+      expect(uut.extractTypographyValue({
+        text70: true,
+        text40: true
+      }),).toEqual(Typography.text40);
+      expect(uut.extractTypographyValue({
+        text40: true,
+        text70: false
+      }),).toEqual(Typography.text40);
     });
 
     it('should return value of the custom made typography', () => {
       const customTypography = {fontSize: Typography.text30.fontSize, fontWeight: '400'};
       Typography.loadTypographies({customTypography});
       expect(uut.extractTypographyValue({customTypography: true})).toEqual(customTypography);
-      expect(
-        uut.extractTypographyValue({
-          text40: true,
-          customTypography: true,
-        }),
-      ).toEqual(customTypography);
-      expect(
-        uut.extractTypographyValue({
-          customTypography: true,
-          text40: true,
-        }),
-      ).toEqual(Typography.text40);
+      expect(uut.extractTypographyValue({
+        text40: true,
+        customTypography: true
+      }),).toEqual(customTypography);
+      expect(uut.extractTypographyValue({
+        customTypography: true,
+        text40: true
+      }),).toEqual(Typography.text40);
     });
   });
 
   describe('extractPaddingValues - paddings modifiers', () => {
     it('should return paddings values  according to padding?-?? prop that was sent', () => {
-      expect(
-        uut.extractPaddingValues({
-          'padding-25': true,
-          'paddingL-15': true,
-          'paddingT-10': true,
-          'paddingR-20': true,
-          'paddingB-15': true,
-          'paddingH-20': true,
-          'paddingV-15': true,
-        }),
-      ).toEqual({
+      expect(uut.extractPaddingValues({
+        'padding-25': true,
+        'paddingL-15': true,
+        'paddingT-10': true,
+        'paddingR-20': true,
+        'paddingB-15': true,
+        'paddingH-20': true,
+        'paddingV-15': true
+      }),).toEqual({
         padding: 25,
         paddingLeft: 15,
         paddingTop: 10,
         paddingRight: 20,
         paddingBottom: 15,
         paddingHorizontal: 20,
-        paddingVertical: 15,
+        paddingVertical: 15
       });
     });
 
@@ -113,30 +101,28 @@ describe('Modifiers', () => {
     });
 
     it('should support Spacing preset for padding', () => {
-      expect(uut.extractPaddingValues({'padding-s3': true})).toEqual({padding: 9});
+      expect(uut.extractPaddingValues({'padding-s3': true})).toEqual({padding: 12});
     });
   });
 
   describe('extractMarginValues - margins modifiers', () => {
     it('should return margins values according to margin?-?? prop that was sent', () => {
-      expect(
-        uut.extractMarginValues({
-          'margin-25': true,
-          'marginL-15': true,
-          'marginT-10': true,
-          'marginR-20': true,
-          'marginB-15': true,
-          'marginH-20': true,
-          'marginV-15': true,
-        }),
-      ).toEqual({
+      expect(uut.extractMarginValues({
+        'margin-25': true,
+        'marginL-15': true,
+        'marginT-10': true,
+        'marginR-20': true,
+        'marginB-15': true,
+        'marginH-20': true,
+        'marginV-15': true
+      }),).toEqual({
         margin: 25,
         marginLeft: 15,
         marginTop: 10,
         marginRight: 20,
         marginBottom: 15,
         marginHorizontal: 20,
-        marginVertical: 15,
+        marginVertical: 15
       });
     });
 
@@ -149,7 +135,7 @@ describe('Modifiers', () => {
     });
 
     it('should support Spacing preset for margin', () => {
-      expect(uut.extractMarginValues({'marginL-s4': true})).toEqual({marginLeft: 12});
+      expect(uut.extractMarginValues({'marginL-s4': true})).toEqual({marginLeft: 16});
     });
   });
 
@@ -157,31 +143,31 @@ describe('Modifiers', () => {
     it('should return prop alignment for a row view', () => {
       expect(uut.extractAlignmentsValues({row: true, left: true})).toEqual({
         flexDirection: 'row',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-start'
       });
       expect(uut.extractAlignmentsValues({row: true, right: true})).toEqual({
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-end'
       });
       expect(uut.extractAlignmentsValues({row: true, top: true})).toEqual({
         flexDirection: 'row',
-        alignItems: 'flex-start',
+        alignItems: 'flex-start'
       });
       expect(uut.extractAlignmentsValues({row: true, bottom: true})).toEqual({
         flexDirection: 'row',
-        alignItems: 'flex-end',
+        alignItems: 'flex-end'
       });
       expect(uut.extractAlignmentsValues({row: true, centerH: true})).toEqual({
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'center'
       });
       expect(uut.extractAlignmentsValues({row: true, centerV: true})).toEqual({
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'center'
       });
       expect(uut.extractAlignmentsValues({row: true, spread: true})).toEqual({
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
       });
     });
 
@@ -189,29 +175,63 @@ describe('Modifiers', () => {
       expect(uut.extractAlignmentsValues({left: true})).toEqual({alignItems: 'flex-start'});
       expect(uut.extractAlignmentsValues({right: true})).toEqual({alignItems: 'flex-end'});
       expect(uut.extractAlignmentsValues({top: true})).toEqual({
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-start'
       });
       expect(uut.extractAlignmentsValues({bottom: true})).toEqual({
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-end'
       });
       expect(uut.extractAlignmentsValues({centerH: true})).toEqual({alignItems: 'center'});
       expect(uut.extractAlignmentsValues({centerV: true})).toEqual({justifyContent: 'center'});
       expect(uut.extractAlignmentsValues({spread: true})).toEqual({
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
       });
     });
 
     it('should return center alignment for both axis', () => {
       expect(uut.extractAlignmentsValues({center: true})).toEqual({
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
       });
       expect(uut.extractAlignmentsValues({row: true, center: true})).toEqual({
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
       });
     });
+  });
+
+  describe('extractPositionStyle', () => {
+    it('should return undefined when modifier prop is invalid/irrelevant', () => {
+      expect(uut.extractPositionStyle({abs: false})).toEqual(undefined);
+      expect(uut.extractPositionStyle({absK: true})).toEqual(undefined);
+      expect(uut.extractPositionStyle({absolute: true})).toEqual(undefined);
+    });
+
+    it('should return absolute style', () => {
+      expect(uut.extractPositionStyle({abs: true})).toEqual({position: 'absolute'});
+    });
+    it('should return absolute fill object style', () => {
+      expect(uut.extractPositionStyle({absF: true})).toEqual({position: 'absolute', top: 0, left: 0, right: 0, bottom: 0});
+    });
+    it('should return absolute with top value', () => {
+      expect(uut.extractPositionStyle({absT: true})).toEqual({position: 'absolute', top: 0});
+    });
+    it('should return absolute with bottom value', () => {
+      expect(uut.extractPositionStyle({absB: true})).toEqual({position: 'absolute', bottom: 0});
+    });
+    it('should return absolute with left value', () => {
+      expect(uut.extractPositionStyle({absL: true})).toEqual({position: 'absolute', left: 0});
+    });
+    it('should return absolute with right value', () => {
+      expect(uut.extractPositionStyle({absR: true})).toEqual({position: 'absolute', right: 0});
+    });
+    it('should return absolute with vertical values', () => {
+      expect(uut.extractPositionStyle({absV: true})).toEqual({position: 'absolute', top: 0, bottom: 0});
+    });
+    it('should return absolute with horizontal values', () => {
+      expect(uut.extractPositionStyle({absH: true})).toEqual({position: 'absolute', left: 0, right: 0});
+    });
+
   });
 
   describe('extractFlexStyle - flex modifier', () => {
@@ -265,31 +285,27 @@ describe('Modifiers', () => {
 
   describe('extractModifiersProps', () => {
     it('should return all modifiers props', () => {
-      expect(
-        uut.extractModifierProps({
-          'paddingL-20': true,
-          'bg-red30': true,
-          other: 'some-value',
-        }),
-      ).toEqual({
+      expect(uut.extractModifierProps({
         'paddingL-20': true,
         'bg-red30': true,
+        other: 'some-value'
+      }),).toEqual({
+        'paddingL-20': true,
+        'bg-red30': true
       });
 
-      expect(
-        uut.extractModifierProps({
-          'margin-50': true,
-          'background-blue20': true,
-          other: 'some-value',
-        }),
-      ).toEqual({
+      expect(uut.extractModifierProps({
         'margin-50': true,
         'background-blue20': true,
+        other: 'some-value'
+      }),).toEqual({
+        'margin-50': true,
+        'background-blue20': true
       });
 
       expect(uut.extractModifierProps({left: true, 'bg-red10': false, other: 'some-value'})).toEqual({
         left: true,
-        'bg-red10': false,
+        'bg-red10': false
       });
     });
   });
@@ -299,20 +315,25 @@ describe('Modifiers', () => {
       const props = {color: 'red', prop1: 'text', prop2: 2};
       expect(uut.extractOwnProps.bind(SampleComponent)(props)).toEqual({
         prop1: 'text',
-        prop2: 2,
+        prop2: 2
       });
     });
 
     it('should omit props that were required to ignore', () => {
       const props = {color: 'red', prop1: 'text', prop2: 2};
       expect(uut.extractOwnProps.bind(SampleComponent)(props, 'prop1')).toEqual({
-        prop2: 2,
+        prop2: 2
       });
       expect(uut.extractOwnProps.bind(SampleComponent)(props, ['prop1', 'prop2'])).toEqual({});
     });
   });
 
   describe('getThemeProps', () => {
+    beforeEach(() => {
+      ThemeManager.setComponentTheme('SampleComponent', undefined);
+      ThemeManager.setComponentForcedTheme('SampleComponent', undefined);
+    });
+
     it('should return props values from the Theme Manager if were defined', () => {
       ThemeManager.setComponentTheme('SampleComponent', {prop1: 'themeValue'});
       expect(uut.getThemeProps.call(SampleComponent, {})).toEqual({prop1: 'themeValue'});
@@ -332,6 +353,11 @@ describe('Modifiers', () => {
       ThemeManager.setComponentTheme('SampleComponent', props => ({prop1: props.test ? 'yes' : 'no'}));
       expect(uut.getThemeProps.call(SampleComponent, {test: true})).toEqual({prop1: 'yes', test: true});
       expect(uut.getThemeProps.call(SampleComponent, {test: false})).toEqual({prop1: 'no', test: false});
+    });
+    
+    it('should prioritize forced theme props over user props', () => {
+      ThemeManager.setComponentForcedTheme('SampleComponent', props => ({foo: 'forced'}));
+      expect(uut.getThemeProps.call(SampleComponent, {foo: 'user-value', other: 'other'})).toEqual({foo: 'forced', other: 'other'});
     });
   });
 });

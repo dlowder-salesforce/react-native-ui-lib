@@ -4,11 +4,14 @@ import {BaseComponent} from '../../commons';
 import TextField from '../inputs/TextField';
 import {WheelPicker} from '../../nativeComponents';
 import PickerDialog from './PickerDialog';
+import TouchableOpacity from '../touchableOpacity';
+import {Colors} from '../../style';
 
 class NativePicker extends BaseComponent {
   state = {
     selectedValue: this.props.value,
     items: this.extractPickerItems(this.props),
+    showDialog: false
   };
 
   extractPickerItems(props) {
@@ -21,20 +24,20 @@ class NativePicker extends BaseComponent {
 
   onCancel = () => {
     this.setState({
-      selectedValue: this.props.value,
+      selectedValue: this.props.value
     });
-    this.input.toggleExpandableModal(false);
+    this.toggleDialog(false);
   };
 
   onDone = () => {
     const {selectedValue, items} = this.state;
-    _.invoke(this.props, 'onChange', selectedValue || items[0].value);
-    this.input.toggleExpandableModal(false);
+    _.invoke(this.props, 'onChange', _.isUndefined(selectedValue) ? _.get(items, '[0].value') : selectedValue);
+    this.toggleDialog(false);
   };
 
-  onValueChange = (selectedValue) => {
+  onValueChange = selectedValue => {
     this.setState({
-      selectedValue,
+      selectedValue
     });
   };
 
@@ -49,13 +52,18 @@ class NativePicker extends BaseComponent {
     return _.get(selectedItem, 'label');
   }
 
+  toggleDialog = showDialog => {
+    this.setState({showDialog});
+  };
+
   renderPickerDialog = () => {
-    const {selectedValue} = this.state;
-    
+    const {selectedValue, showDialog} = this.state;
+
     return (
       <PickerDialog
         {...this.getThemeProps()}
-        disablePan
+        visible={showDialog}
+        panDirection={null}
         onDismiss={this.onCancel}
         onValueChange={this.onValueChange}
         selectedValue={selectedValue}
@@ -66,17 +74,30 @@ class NativePicker extends BaseComponent {
   };
 
   render() {
+    const {renderPicker, customPickerProps, testID} = this.props;
+
+    if (_.isFunction(renderPicker)) {
+      const {selectedValue} = this.state;
+      return (
+        <>
+          <TouchableOpacity {...customPickerProps} link onPress={() => this.toggleDialog(true)} testID={testID}>
+            {renderPicker(selectedValue)}
+          </TouchableOpacity>
+          {this.renderPickerDialog()}
+        </>
+      );
+    }
+
     const textInputProps = TextField.extractOwnProps(this.props);
     const label = this.getLabel();
-    
     return (
       <TextField
+        color={Colors.dark10}
         {...textInputProps}
-        ref={r => (this.input = r)}
-        enableErrors={false}
         value={label}
         expandable
         renderExpandable={this.renderPickerDialog}
+        onToggleExpandableModal={this.toggleDialog}
       />
     );
   }

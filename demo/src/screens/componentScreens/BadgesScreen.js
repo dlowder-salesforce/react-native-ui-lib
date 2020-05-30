@@ -11,7 +11,7 @@ export default class BadgesScreen extends Component {
     super(props);
 
     this.state = {
-      value: 42,
+      value: 42
     };
   }
 
@@ -29,26 +29,9 @@ export default class BadgesScreen extends Component {
         <Text text50 row center marginB-15>
           Badges
         </Text>
-        <View row center>
-          <View center marginH-10>
-            <Badge label={'10'} backgroundColor={Colors.blue30} />
-            <Badge
-              label={'10'}
-              containerStyle={{marginTop: BadgesSpace}}
-              backgroundColor={Colors.blue30}
-              borderWidth={3}
-              borderColor={Colors.blue50}
-            />
-            <Badge
-              size="small"
-              label={'10'}
-              containerStyle={{marginTop: BadgesSpace}}
-              backgroundColor={Colors.blue30}
-            />
-          </View>
-
-          <View center marginH-10>
-            <Badge label={this.state.value.toString()} backgroundColor={Colors.red30} />
+        <View row center style={{alignItems: 'flex-start'}}>
+          <View center paddingH-10>
+            <Badge label={this.state.value.toString()} backgroundColor={Colors.red30}/>
             <Badge
               label={this.state.value.toString()}
               containerStyle={{marginTop: BadgesSpace}}
@@ -63,8 +46,8 @@ export default class BadgesScreen extends Component {
             />
           </View>
 
-          <View center marginH-10>
-            <Badge label={'9999'} labelFormatterLimit={3} />
+          <View center paddingH-10>
+            <Badge label={'9999'} labelFormatterLimit={3}/>
             <Badge
               label={'999'}
               labelFormatterLimit={2}
@@ -72,20 +55,7 @@ export default class BadgesScreen extends Component {
               borderWidth={2}
               borderColor={Colors.white}
             />
-            <Badge labelFormatterLimit={1} size="small" label={'99999999'} containerStyle={{marginTop: BadgesSpace}} />
-          </View>
-
-          <View center marginH-10>
-            <Badge size={28} label={'9999'} labelFormatterLimit={3} />
-            <Badge
-              size={28}
-              label={'999'}
-              labelFormatterLimit={2}
-              containerStyle={{marginTop: BadgesSpace}}
-              borderWidth={2}
-              borderColor={Colors.white}
-            />
-            <Badge size={28} labelFormatterLimit={1} label={'99999999'} containerStyle={{marginTop: BadgesSpace}} />
+            <Badge labelFormatterLimit={1} size="small" label={'99999999'} containerStyle={{marginTop: BadgesSpace}}/>
           </View>
         </View>
 
@@ -119,18 +89,18 @@ export default class BadgesScreen extends Component {
             style={{justifyContent: 'space-around', alignItems: 'flex-start', width: 140, height: 140}}
           >
             <Text text80 row>
-              size={"{'pimpleSmall'}"}
+              size={'{\'pimpleSmall\'}'}
             </Text>
-            <Text text80>size={"{'pimpleBig'}"}</Text>
+            <Text text80>size={'{\'pimpleBig\'}'}</Text>
             <Text text80 row>
-              size={"{'pimpleHuge'}"}
+              size={'{\'pimpleHuge\'}'}
             </Text>
           </View>
 
           <View center column style={{justifyContent: 'space-around', width: 40, height: 140}}>
-            <Badge containerStyle={{marginLeft: BadgesSpace}} backgroundColor={Colors.green30} size={'pimpleSmall'} />
-            <Badge containerStyle={{marginLeft: BadgesSpace}} backgroundColor={Colors.red30} size={'pimpleBig'} />
-            <Badge containerStyle={{marginLeft: BadgesSpace}} backgroundColor={Colors.blue30} size={'pimpleHuge'} />
+            <Badge containerStyle={{marginLeft: BadgesSpace}} backgroundColor={Colors.green30} size={'pimpleSmall'}/>
+            <Badge containerStyle={{marginLeft: BadgesSpace}} backgroundColor={Colors.red30} size={'pimpleBig'}/>
+            <Badge containerStyle={{marginLeft: BadgesSpace}} backgroundColor={Colors.blue30} size={'pimpleHuge'}/>
           </View>
         </View>
         <Text text50 marginB-10 row center marginT-25>
@@ -138,21 +108,21 @@ export default class BadgesScreen extends Component {
         </Text>
         <View row paddingH-15>
           <View style={styles.iconBadgeColumnContainer}>
-            <Badge size={'small'} icon={star} borderWidth={1} borderColor={Colors.red30} />
+            <Badge size={'small'} icon={star} borderWidth={1} borderColor={Colors.red30}/>
             <Text text80 style={{marginTop: 10}}>
               small(16)
             </Text>
           </View>
 
           <View style={styles.iconBadgeColumnContainer}>
-            <Badge icon={star} iconStyle={{tintColor: Colors.red30}} />
+            <Badge icon={star} iconStyle={{tintColor: Colors.red30}}/>
             <Text text80 style={{marginTop: 10}}>
               default(20)
             </Text>
           </View>
 
           <View style={styles.iconBadgeColumnContainer}>
-            <Badge size={'large'} icon={star} iconStyle={{backgroundColor: Colors.red30}} />
+            <Badge size={'large'} icon={star} iconStyle={{backgroundColor: Colors.red30}}/>
             <Text text80 style={{marginTop: 10}}>
               large(24)
             </Text>
@@ -167,12 +137,12 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     padding: 20,
-    backgroundColor: Colors.dark70,
+    backgroundColor: Colors.dark70
   },
   iconBadgeColumnContainer: {
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexDirection: 'column',
-  },
+    flexDirection: 'column'
+  }
 });

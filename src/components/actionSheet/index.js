@@ -11,6 +11,7 @@ import Text from '../text';
 import Button from '../button';
 import Image from '../image';
 import ListItem from '../listItem';
+import PanningProvider from '../panningViews/panningProvider';
 
 const VERTICAL_PADDING = 8;
 
@@ -75,12 +76,12 @@ export default class ActionSheet extends BaseComponent {
     /**
      * Render custom title
      */
-    renderTitle: PropTypes.func,
+    renderTitle: PropTypes.elementType,
     /**
      * Render custom action
      * Note: you will need to call onOptionPress so the option's onPress will be called
      */
-    renderAction: PropTypes.func,
+    renderAction: PropTypes.elementType,
     /**
      * Called once the modal has been dissmissed (iOS only, modal only)
      */
@@ -100,7 +101,7 @@ export default class ActionSheet extends BaseComponent {
 
   static defaultProps = {
     title: undefined,
-    message: undefined,
+    message: undefined
   };
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -118,16 +119,14 @@ export default class ActionSheet extends BaseComponent {
         cancelBtnIndex = optionsArray.length - 1;
       }
 
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          title,
-          message,
-          options: _.map(optionsArray, 'label'),
-          cancelButtonIndex: cancelBtnIndex,
-          destructiveButtonIndex,
-        },
-        this.onOptionPress,
-      );
+      ActionSheetIOS.showActionSheetWithOptions({
+        title,
+        message,
+        options: _.map(optionsArray, 'label'),
+        cancelButtonIndex: cancelBtnIndex,
+        destructiveButtonIndex
+      },
+      this.onOptionPress,);
     }
   }
 
@@ -135,11 +134,9 @@ export default class ActionSheet extends BaseComponent {
     _.invoke(this.props, `options[${optionIndex}].onPress`);
     _.invoke(this.props, 'onDismiss');
   }
-  
+
   renderIcon(icon) {
-    return (
-      <Image source={icon} resizeMode={'contain'} style={{width: 20, height: 20, marginRight: 16}}/>
-    );
+    return <Image source={icon} resizeMode={'contain'} style={{width: 20, height: 20, marginRight: 16}}/>;
   }
 
   renderAction(option, index) {
@@ -165,20 +162,19 @@ export default class ActionSheet extends BaseComponent {
   renderActions() {
     const {title, options, cancelButtonIndex, renderAction, optionsStyle} = this.props;
     const optionsToRender = _.filter(options, (option, index) => index !== cancelButtonIndex);
-    
+
     return (
       <View style={[_.isEmpty(title) ? styles.listNoTitle : styles.listWithTitle, optionsStyle]}>
-        {_.isFunction(renderAction) ?
-          optionsToRender.map((option, index) => renderAction(option, index, this.onOptionPress)) :
-          _.map(optionsToRender, this.renderAction)
-        }
+        {_.isFunction(renderAction)
+          ? optionsToRender.map((option, index) => renderAction(option, index, this.onOptionPress))
+          : _.map(optionsToRender, this.renderAction)}
       </View>
     );
   }
 
   renderTitle() {
     const {title} = this.props;
-    
+
     if (!_.isEmpty(title)) {
       return (
         <View height={56} paddingL-16 centerV>
@@ -194,7 +190,7 @@ export default class ActionSheet extends BaseComponent {
     const {renderTitle} = this.props;
     const {containerStyle} = this.getThemeProps();
     return (
-      <View style={[styles.sheet, containerStyle]} >
+      <View style={[styles.sheet, containerStyle]}>
         {_.isFunction(renderTitle) ? renderTitle() : this.renderTitle()}
         {this.renderActions()}
       </View>
@@ -202,12 +198,24 @@ export default class ActionSheet extends BaseComponent {
   }
 
   render() {
-    const {useNativeIOS, visible, onDismiss, useModal, dialogStyle, onModalDismissed, testID, useSafeArea} = this.getThemeProps();
-    
-    if (Constants.isIOS && useNativeIOS) return null;
-    
+    const {
+      useNativeIOS,
+      visible,
+      onDismiss,
+      useModal,
+      dialogStyle,
+      onModalDismissed,
+      testID,
+      useSafeArea
+    } = this.getThemeProps();
+
+    if (Constants.isIOS && useNativeIOS) {
+      return null;
+    }
+
     return (
       <Dialog
+        migrate
         useSafeArea={useSafeArea}
         testID={testID}
         bottom
@@ -219,6 +227,7 @@ export default class ActionSheet extends BaseComponent {
         onDismiss={onDismiss}
         useModal={useModal}
         onModalDismissed={onModalDismissed}
+        panDirection={PanningProvider.Directions.DOWN}
       >
         {this.renderSheet()}
       </Dialog>
@@ -239,5 +248,5 @@ const styles = StyleSheet.create({
   listNoTitle: {
     paddingTop: VERTICAL_PADDING,
     paddingBottom: VERTICAL_PADDING
-  },
+  }
 });

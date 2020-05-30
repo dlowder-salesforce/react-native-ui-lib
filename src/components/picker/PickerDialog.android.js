@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Text as RNText} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
@@ -24,11 +24,11 @@ class PickerDialog extends BaseComponent {
     /**
      * select label style
      */
-    selectLabelStyle: Text.propTypes.style,
+    selectLabelStyle: RNText.propTypes.style,
     /**
      * cancel label style
      */
-    cancelLabelStyle: Text.propTypes.style,
+    cancelLabelStyle: RNText.propTypes.style
   };
 
   state = {};
@@ -56,10 +56,10 @@ class PickerDialog extends BaseComponent {
 
     return (
       <View style={styles.footer}>
-        <Text text80 blue30 onPress={onCancel} style={cancelLabelStyle}>
+        <Text text80 blue30 onPress={onCancel} accessibilityRole={onCancel ? 'button' : undefined} style={cancelLabelStyle}>
           {cancelLabel}
         </Text>
-        <Text text80 blue30 marginL-15 onPress={onDone} style={selectLabelStyle}>
+        <Text text80 blue30 marginL-15 onPress={onDone} accessibilityRole={onDone ? 'button' : undefined} style={selectLabelStyle}>
           {doneLabel}
         </Text>
       </View>
@@ -81,7 +81,7 @@ class PickerDialog extends BaseComponent {
   render() {
     const dialogProps = Dialog.extractOwnProps(this.props);
     return (
-      <Dialog {...dialogProps} visible height="50%" width="77%">
+      <Dialog {...dialogProps} migrate height="50%" width="77%">
         <View style={styles.dialog}>
           {this.renderHeader()}
           <View flex center paddingH-24>
@@ -100,17 +100,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     overflow: 'hidden',
     borderRadius: BorderRadiuses.br10,
-    paddingHorizontal: 24,
+    paddingHorizontal: 24
   },
   header: {
-    paddingTop: 21,
+    paddingTop: 21
   },
   footer: {
     height: 52,
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
+    alignItems: 'center'
+  }
 });
 
 export default PickerDialog;

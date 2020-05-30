@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {Component} from 'react';
 import {StyleSheet, ScrollView} from 'react-native';
-import {Constants, Colors, View, Card, Button, Text, Image} from 'react-native-ui-lib'; //eslint-disable-line
+import {Constants, Colors, View, Card, Button, Text, Image} from 'react-native-ui-lib'; // eslint-disable-line
 import posts from '../../data/posts';
 
 const featureIcon = require('../../assets/icons/star.png');
@@ -12,18 +12,19 @@ const cardImage2 = require('../../assets/images/empty-state.jpg');
 export default class CardsScreen extends Component {
   state = {
     selected1: true,
-    selected2: true,
+    selected2: true
   };
 
   render() {
     const {selected1, selected2} = this.state;
+
     return (
       <View>
         <Image
           style={StyleSheet.absoluteFillObject}
           source={{
             uri:
-              'https://images.pexels.com/photos/1005644/pexels-photo-1005644.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+              'https://images.pexels.com/photos/1005644/pexels-photo-1005644.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
           }}
         />
 
@@ -59,7 +60,7 @@ export default class CardsScreen extends Component {
                 activeOpacity={1}
                 marginR-20
               >
-                <Card.Image height={'100%'} imageSource={cardImage} />
+                <Card.Image height={'100%'} imageSource={cardImage}/>
               </Card>
               <Card
                 height={120}
@@ -71,10 +72,10 @@ export default class CardsScreen extends Component {
                 selectionOptions={{
                   color: Colors.dark10,
                   indicatorSize: 25,
-                  borderWidth: 3,
+                  borderWidth: 3
                 }}
               >
-                <Card.Image height={'100%'} imageSource={cardImage} />
+                <Card.Image height={'100%'} imageSource={cardImage}/>
               </Card>
             </View>
 
@@ -110,8 +111,19 @@ export default class CardsScreen extends Component {
               )}
             </View>
 
-            <Card row height={160} style={{marginBottom: 15}} onPress={() => {}} enableBlur>
-              <Card.Image width={115} imageSource={cardImage} />
+            <Card
+              row
+              height={160}
+              style={{marginBottom: 15}}
+              onPress={() => {}}
+              enableBlur
+              borderRadius={0}
+              useNative
+              backgroundColor={Colors.white}
+              activeOpacity={1}
+              activeScale={0.96}
+            >
+              <Card.Image width={115} imageSource={cardImage}/>
               <View padding-20 flex>
                 <Text text70 dark10>
                   You’re Invited!
@@ -119,28 +131,35 @@ export default class CardsScreen extends Component {
                 <Text text80 dark10>
                   222 Join Old The Town Barbershop Official Store. Download the Wix app to...
                 </Text>
-
                 <Text text90 dark50>
                   wix.to/A465c
                 </Text>
               </View>
             </Card>
 
-            <Card row height={160} style={{marginBottom: 15}} onPress={() => {}} br10>
+            <Card
+              row
+              height={160}
+              style={{marginBottom: 15}}
+              onPress={() => {}}
+              br10
+              useNative
+              backgroundColor={Colors.white}
+              activeOpacity={1}
+              activeScale={1.04}
+            >
               <View padding-20 flex>
                 <Text text70 dark10>
                   You’re Invited!
                 </Text>
-
                 <Text text80 dark10>
                   Join Old The Town Barbershop Official Store. Download the Wix app to...
                 </Text>
-
                 <Text text90 dark50>
                   wix.to/A465c
                 </Text>
               </View>
-              <Card.Image width={115} imageSource={cardImage} />
+              <Card.Image width={115} imageSource={cardImage}/>
             </Card>
 
             <Card style={{marginBottom: 15}} onPress={() => {}}>
@@ -148,19 +167,19 @@ export default class CardsScreen extends Component {
                 <Text text70 dark10>
                   You’re Invited!
                 </Text>
-
                 <Text text90 dark50>
                   join now
                 </Text>
               </View>
-              <Card.Image height={120} imageSource={cardImage2} />
+              <Card.Image height={120} imageSource={cardImage2}/>
             </Card>
 
             {_.map(posts, (post, i) => {
               const statusColor = post.status === 'Published' ? Colors.green30 : Colors.orange30;
+
               return (
                 <Card key={i} style={{marginBottom: 15}} onPress={() => console.log('press on a card')}>
-                  <Card.Image height={160} imageSource={post.coverImage} />
+                  <Card.Image height={160} imageSource={post.coverImage}/>
 
                   <View padding-20>
                     <Text text40 color={Colors.dark10}>
@@ -182,8 +201,8 @@ export default class CardsScreen extends Component {
                         {post.likes} Likes
                       </Text>
                       <View row right>
-                        <Button style={{marginRight: 10}} text90 link iconSource={featureIcon} label="Feature" />
-                        <Button text90 link iconSource={shareIcon} label="Share" />
+                        <Button style={{marginRight: 10}} text90 link iconSource={featureIcon} label="Feature"/>
+                        <Button text90 link iconSource={shareIcon} label="Share"/>
                       </View>
                     </View>
                   </View>

@@ -1,9 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import {StyleSheet} from 'react-native';
 import _ from 'lodash';
-import {Typography, Colors} from '../style';
-import {DocsGenerator} from '../helpers';
+import {Colors} from '../style';
 import * as Modifiers from './modifiers';
 
 export default function baseComponent(usePure) {
@@ -24,17 +23,18 @@ export default function baseComponent(usePure) {
       }
 
       this.state = {
-        ...this.buildStyleOutOfModifiers(),
+        ...this.buildStyleOutOfModifiers()
       };
     }
 
+    // TODO: remove this after migrating all components to use asBaseComponent HOC
     UNSAFE_componentWillReceiveProps(nextProps) {
-      this.updateModifiers(this.props, nextProps);
+      this.updateModifiers(this.getThemeProps(), nextProps);
     }
 
     // TODO: stop using this and remove it
     getSnippet() {
-      return DocsGenerator.generateSnippet(DocsGenerator.extractComponentInfo(this));
+      return null;
     }
 
     generateStyles() {
@@ -43,14 +43,16 @@ export default function baseComponent(usePure) {
 
     getThemeProps = Modifiers.getThemeProps;
 
+    extractAccessibilityProps = Modifiers.extractAccessibilityProps;
+
     extractTypographyValue() {
-      return Modifiers.extractTypographyValue(this.props);
+      return Modifiers.extractTypographyValue(this.getThemeProps());
     }
 
-    extractColorValue = () => Modifiers.extractColorValue(this.getThemeProps())
+    extractColorValue = () => Modifiers.extractColorValue(this.getThemeProps());
 
     extractAnimationProps() {
-      return _.pick(this.props, [
+      return _.pick(this.getThemeProps(), [
         'animation',
         'duration',
         'delay',
@@ -60,12 +62,12 @@ export default function baseComponent(usePure) {
         'transition',
         'onAnimationBegin',
         'onAnimationEnd',
-        'useNativeDriver',
+        'useNativeDriver'
       ]);
     }
 
     extractModifierProps() {
-      return Modifiers.extractModifierProps(this.props);
+      return Modifiers.extractModifierProps(this.getThemeProps());
     }
 
     // TODO: stop using this and remove it
@@ -81,7 +83,8 @@ export default function baseComponent(usePure) {
     }
 
     updateModifiers(currentProps, nextProps) {
-      const allKeys = _.union([..._.keys(currentProps), ..._.keys(nextProps)]);
+      const ignoredKeys = ['children', 'forwardedRef', 'style', 'testID'];
+      const allKeys = _.union([..._.keys(currentProps), ..._.keys(nextProps)]).filter((key) => !ignoredKeys.includes(key));
       const changedKeys = _.filter(allKeys, key => !_.isEqual(currentProps[key], nextProps[key]));
 
       const options = {};
@@ -107,22 +110,20 @@ export default function baseComponent(usePure) {
 
       if (!_.isEmpty(options)) {
         this.setState({
-          ...this.buildStyleOutOfModifiers(options, nextProps),
+          ...this.buildStyleOutOfModifiers(options, nextProps)
         });
       }
     }
 
-    buildStyleOutOfModifiers(
-      options = {
-        backgroundColor: true,
-        borderRadius: true,
-        paddings: true,
-        margins: true,
-        alignments: true,
-        flex: true,
-      },
-      props = this.props,
-    ) {
+    buildStyleOutOfModifiers(options = {
+      backgroundColor: true,
+      borderRadius: true,
+      paddings: true,
+      margins: true,
+      alignments: true,
+      flex: true
+    },
+    props = this.getThemeProps(),) {
       const style = {};
 
       if (options.backgroundColor) {

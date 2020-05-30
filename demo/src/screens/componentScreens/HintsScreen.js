@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
-import {View, Text, Hint, Button, RadioGroup, RadioButton, Switch, Assets} from 'react-native-ui-lib'; //eslint-disable-line
+import {View, Text, Hint, Button, RadioGroup, RadioButton, Switch} from 'react-native-ui-lib'; //eslint-disable-line
+
+
+const settingsIcon = require('../../assets/icons/settings.png');
 
 export default class HintsScreen extends Component {
   constructor(props) {
@@ -39,7 +42,7 @@ export default class HintsScreen extends Component {
       : 'Add other cool and useful stuff through adding apps to your visitors to enjoy.';
 
     return (
-      <View>
+      <View flex>
         <View
           flex
           padding-20
@@ -52,17 +55,17 @@ export default class HintsScreen extends Component {
           <Hint
             visible={showHint}
             // color={Colors.orange30}
-            // message={message}
-            message={
-              <Text>
-                {message}{' '}
-                <Text style={{textDecorationLine: 'underline'}} onPress={() => {}}>
-                  click here
-                </Text>
-              </Text>
-            }
+            message={message}
+            // message={
+            //   <Text>
+            //     {message}{' '}
+            //     <Text style={{textDecorationLine: 'underline'}} onPress={() => {}}>
+            //       click here
+            //     </Text>
+            //   </Text>
+            // }
             // messageStyle={{color: 'red'}}
-            icon={showIcon ? Assets.icons.settings : undefined}
+            icon={showIcon ? settingsIcon : undefined}
             // iconStyle={{tintColor: 'red'}}
             // offset={35}
             position={showBottomHint ? Hint.positions.BOTTOM : Hint.positions.TOP}
@@ -99,7 +102,7 @@ export default class HintsScreen extends Component {
           )}
         </View>
 
-        <View padding-20 collapsabe={false}>
+        <View padding-20 collapsable={false}>
           <RadioGroup
             row
             centerV

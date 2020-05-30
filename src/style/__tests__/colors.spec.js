@@ -2,9 +2,9 @@ import uut from '../colors';
 
 describe('style/Colors', () => {
   it('should add alpha to hex color value', () => {
-    expect(uut.rgba(uut.green30, 0.7)).toBe('rgba(101, 200, 136, 0.7)');
-    expect(uut.rgba(uut.red10, 0.7)).toBe('rgba(207, 38, 47, 0.7)');
-    expect(uut.rgba(uut.green30, 0.25)).toBe('rgba(101, 200, 136, 0.25)');
+    expect(uut.rgba(uut.green30, 0.7)).toBe('rgba(0, 205, 139, 0.7)');
+    expect(uut.rgba(uut.red10, 0.7)).toBe('rgba(215, 46, 21, 0.7)');
+    expect(uut.rgba(uut.green30, 0.25)).toBe('rgba(0, 205, 139, 0.25)');
     // expect(uut.rgba('#ff2442', 0.05)).toBe(`${'#ff2442'}0D`);
     // expect(uut.rgba(uut.blue20, 1)).toBe(`${uut.blue20}FF`);
     // expect(uut.rgba(uut.blue20)).toBe(`${uut.blue20}FF`);
@@ -24,12 +24,8 @@ describe('style/Colors', () => {
   });
 
   it('should handle invalid rgb code', () => {
-    expect(() => uut.rgba(-12, 128, 136, 0.7)).toThrow(
-      new Error('-12 is invalid rgb code, please use number between 0-255'),
-    );
-    expect(() => uut.rgba(12, 128, 256, 0.7)).toThrow(
-      new Error('256 is invalid rgb code, please use number between 0-255'),
-    );
+    expect(() => uut.rgba(-12, 128, 136, 0.7)).toThrow(new Error('-12 is invalid rgb code, please use number between 0-255'),);
+    expect(() => uut.rgba(12, 128, 256, 0.7)).toThrow(new Error('256 is invalid rgb code, please use number between 0-255'),);
   });
 
   it('should handle invalid hex code', () => {
@@ -78,32 +74,32 @@ describe('style/Colors', () => {
       expect(uut.getColorTint('#000000', 60)).toEqual('#808080');
     });
 
-    it('should handle color that does not exist in uilib', () => {                  
-      expect(uut.getColorTint('#F1BE0B', 10)).toEqual('#8D7006'); // 
-      expect(uut.getColorTint('#F1BE0B', 20)).toEqual('#BE9609'); // 
-      expect(uut.getColorTint('#F1BE0B', 30)).toEqual('#F1BE0B'); // 
-      expect(uut.getColorTint('#F1BE0B', 40)).toEqual('#F6CC37'); // 
-      expect(uut.getColorTint('#F1BE0B', 50)).toEqual('#F8D868'); // 
-      expect(uut.getColorTint('#F1BE0B', 60)).toEqual('#FAE599'); // 
-      expect(uut.getColorTint('#F1BE0B', 70)).toEqual('#FDF1C9'); // 
-      expect(uut.getColorTint('#F1BE0B', 80)).toEqual('#FFFEFA'); // 
+    it('should handle color that does not exist in uilib', () => {
+      expect(uut.getColorTint('#F1BE0B', 10)).toEqual('#8D7006'); //
+      expect(uut.getColorTint('#F1BE0B', 20)).toEqual('#BE9609'); //
+      expect(uut.getColorTint('#F1BE0B', 30)).toEqual('#F1BE0B'); //
+      expect(uut.getColorTint('#F1BE0B', 40)).toEqual('#F6CC37'); //
+      expect(uut.getColorTint('#F1BE0B', 50)).toEqual('#F8D868'); //
+      expect(uut.getColorTint('#F1BE0B', 60)).toEqual('#FAE599'); //
+      expect(uut.getColorTint('#F1BE0B', 70)).toEqual('#FDF1C9'); //
+      expect(uut.getColorTint('#F1BE0B', 80)).toEqual('#FFFEFA'); //
     });
 
     it('should round down tint level to the nearest one', () => {
-      expect(uut.getColorTint('#F1BE0B', 75)).toEqual('#FDF1C9'); 
-      expect(uut.getColorTint('#F1BE0B', 25)).toEqual('#BE9609'); 
+      expect(uut.getColorTint('#F1BE0B', 75)).toEqual('#FDF1C9');
+      expect(uut.getColorTint('#F1BE0B', 25)).toEqual('#BE9609');
       expect(uut.getColorTint('#F1BE0B', 35)).toEqual('#F1BE0B');
     });
 
     it('should handle out of range tint levels and round them to the nearest one in range', () => {
-      expect(uut.getColorTint('#F1BE0B', 3)).toEqual('#8D7006'); 
+      expect(uut.getColorTint('#F1BE0B', 3)).toEqual('#8D7006');
       expect(uut.getColorTint('#F1BE0B', 95)).toEqual('#FFFEFA');
     });
-    
+
     it('should memoize calls for generateColorPalette', () => {
-      uut.getColorTint('#3F88C5', 20)
-      uut.getColorTint('#3F88C5', 50)
-      uut.getColorTint('#3F88C5', 70)
+      uut.getColorTint('#3F88C5', 20);
+      uut.getColorTint('#3F88C5', 50);
+      uut.getColorTint('#3F88C5', 70);
       const cachedPalette = uut.generateColorPalette.cache.get('#3F88C5');
       expect(cachedPalette).toBeDefined();
       expect(cachedPalette.length).toBe(8);

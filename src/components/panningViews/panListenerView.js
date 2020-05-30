@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {PanResponder} from 'react-native';
 import {PureBaseComponent} from '../../commons';
-import {View} from 'react-native-ui-lib'; //eslint-disable-line
 import asPanViewConsumer from './asPanViewConsumer';
 import PanningProvider from './panningProvider';
+import View from '../view';
 
 const DEFAULT_PAN_SENSITIVITY = 5;
 const DEFAULT_SWIPE_VELOCITY = 1.8;
@@ -24,17 +24,17 @@ class PanListenerView extends PureBaseComponent {
     directions: PropTypes.arrayOf(PropTypes.oneOf(Object.values(PanningProvider.Directions))),
     /**
      * This is were you will get notified when a drag occurs
-     * onDrag = ({directions, velocities}) => {...}
+     * onDrag = ({directions, deltas}) => {...}
      * directions - array of directions
-     * velocities - array of velocities (same length and order as directions)
+     * deltas - array of deltas (same length and order as directions)
      * Both arrays will have {x, y} - if no x or y drag has occurred this value will be undefined
      */
     onDrag: PropTypes.func,
     /**
      * This is were you will get notified when a swipe occurs
-     * onSwipe = ({directions, deltas}) => {...}
+     * onSwipe = ({directions, velocities}) => {...}
      * directions - array of directions
-     * deltas - array of deltas (same length and order as directions)
+     * velocities - array of velocities (same length and order as directions)
      * Both arrays will have {x, y} - if no x or y swipe has occurred this value will be undefined
      */
     onSwipe: PropTypes.func,
@@ -63,6 +63,11 @@ class PanListenerView extends PureBaseComponent {
      * Note: a pan would have to occur (i.e. the panSensitivity has already been surpassed)
      */
     swipeVelocitySensitivity: PropTypes.number,
+    /**
+     * Is there a view that is clickable (has onPress etc.) in the PanListenerView.
+     * This can affect the panability of this component.
+     */
+    isClickable: PropTypes.bool
   };
 
   static defaultProps = {
@@ -70,10 +75,10 @@ class PanListenerView extends PureBaseComponent {
       PanningProvider.Directions.UP,
       PanningProvider.Directions.DOWN,
       PanningProvider.Directions.LEFT,
-      PanningProvider.Directions.RIGHT,
+      PanningProvider.Directions.RIGHT
     ],
     panSensitivity: DEFAULT_PAN_SENSITIVITY,
-    swipeVelocitySensitivity: DEFAULT_SWIPE_VELOCITY,
+    swipeVelocitySensitivity: DEFAULT_SWIPE_VELOCITY
   };
 
   constructor(props) {
@@ -81,15 +86,16 @@ class PanListenerView extends PureBaseComponent {
 
     this.state = {};
 
+    const {isClickable} = props;
     this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: this.yes,
+      onStartShouldSetPanResponder: isClickable ? this.shouldPan : this.yes,
       onMoveShouldSetPanResponder: this.shouldPan,
       onStartShouldSetPanResponderCapture: this.no,
       onMoveShouldSetPanResponderCapture: this.no,
       onPanResponderGrant: this.handlePanStart,
       onPanResponderMove: this.handlePanMove,
       onPanResponderRelease: this.handlePanRelease,
-      onPanResponderTerminate: this.handlePanTerminate,
+      onPanResponderTerminate: this.handlePanTerminate
     });
   }
 
@@ -149,7 +155,7 @@ class PanListenerView extends PureBaseComponent {
       selectedDirections.y = PanningProvider.Directions.DOWN;
       selectedAmounts.y = y;
     }
-    
+
     return {selectedDirections, selectedAmounts};
   };
 

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {StyleSheet, ViewPropTypes, TouchableOpacity} from 'react-native';
+import {StyleSheet, ViewPropTypes, TouchableOpacity, Text as RNText} from 'react-native';
 import {Colors} from '../../style';
 import {PureBaseComponent} from '../../commons';
 import Badge, {BADGE_SIZES} from '../badge';
@@ -9,17 +9,19 @@ import View from '../view';
 import Text from '../text';
 import Image from '../image';
 import AnimatedImage from '../animatedImage';
+import forwardRef from '../../commons/forwardRef';
 
 const deprecatedProps = [
   {old: 'isOnline', new: 'badgeProps.backgroundColor'},
   {old: 'status', new: 'badgeProps.backgroundColor'},
+  {old: 'imageSource', new: 'source'}
 ];
 
 export const STATUS_MODES = {
   ONLINE: 'ONLINE',
   OFFLINE: 'OFFLINE',
   AWAY: 'AWAY',
-  NONE: 'NONE',
+  NONE: 'NONE'
 };
 
 export const BADGE_POSITIONS = {
@@ -40,7 +42,7 @@ const DEFAULT_BADGE_POSITION = BADGE_POSITIONS.TOP_RIGHT;
  * @image: https://user-images.githubusercontent.com/33805983/34480603-197d7f64-efb6-11e7-9feb-db8ba756f055.png
  * @example: https://github.com/wix/react-native-ui-lib/blob/master/demo/src/screens/componentScreens/AvatarsScreen.js
  */
-export default class Avatar extends PureBaseComponent {
+export class Avatar extends PureBaseComponent {
   constructor(props) {
     super(props);
 
@@ -61,7 +63,7 @@ export default class Avatar extends PureBaseComponent {
     animate: PropTypes.bool,
     /**
      * Background color for Avatar
-     */ 
+     */
     backgroundColor: PropTypes.string,
     /**
      * Badge location on Avatar
@@ -78,7 +80,7 @@ export default class Avatar extends PureBaseComponent {
     /**
      * The image source (external or assets)
      */
-    imageSource: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
+    source: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
     /**
      * Image props object
      */
@@ -122,7 +124,7 @@ export default class Avatar extends PureBaseComponent {
     /**
      * ribbon label custom style
      */
-    ribbonLabelStyle: Text.propTypes.style,
+    ribbonLabelStyle: RNText.propTypes.style,
     /**
      * Custom ribbon
      */
@@ -142,7 +144,7 @@ export default class Avatar extends PureBaseComponent {
     /**
      * Press handler
      */
-    onPress: PropTypes.func,
+    onPress: PropTypes.func
   };
 
   static defaultProps = {
@@ -150,7 +152,7 @@ export default class Avatar extends PureBaseComponent {
     backgroundColor: Colors.dark80,
     size: 50,
     labelColor: Colors.dark10,
-    badgePosition: DEFAULT_BADGE_POSITION,
+    badgePosition: DEFAULT_BADGE_POSITION
   };
 
   generateStyles() {
@@ -165,7 +167,7 @@ export default class Avatar extends PureBaseComponent {
       height: size,
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: size / 2,
+      borderRadius: size / 2
     };
   }
 
@@ -175,7 +177,7 @@ export default class Avatar extends PureBaseComponent {
       ...StyleSheet.absoluteFillObject,
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: size / 2,
+      borderRadius: size / 2
     };
   }
 
@@ -186,7 +188,7 @@ export default class Avatar extends PureBaseComponent {
       position: 'absolute',
       top: '10%',
       left: size / 1.7,
-      borderRadius: size / 2,
+      borderRadius: size / 2
     };
   }
 
@@ -222,8 +224,8 @@ export default class Avatar extends PureBaseComponent {
     const x = Math.sqrt(radius ** 2 * 2);
     const y = x - radius;
     const shift = Math.sqrt(y ** 2 / 2) - (BADGE_SIZES[this.getBadgeSize()] + this.getBadgeBorderWidth() * 2) / 2;
-    const badgeLocation = _.split(_.toLower(badgePosition), '_', 2)
-    const badgeAlignment = {position: 'absolute', [badgeLocation[0]]: shift, [badgeLocation[1]]: shift}
+    const badgeLocation = _.split(_.toLower(badgePosition), '_', 2);
+    const badgeAlignment = {position: 'absolute', [badgeLocation[0]]: shift, [badgeLocation[1]]: shift};
 
     return badgeAlignment;
   }
@@ -263,23 +265,25 @@ export default class Avatar extends PureBaseComponent {
   renderImage() {
     const {
       animate,
+      source,
       imageSource,
       onImageLoadStart,
       onImageLoadEnd,
       onImageLoadError,
       testID,
       imageProps,
-      imageStyle,
+      imageStyle
     } = this.props;
-    const hasImage = !_.isUndefined(imageSource);
+    const hasImage = !_.isUndefined(imageSource) || !_.isUndefined(source);
     const ImageContainer = animate ? AnimatedImage : Image;
+    const avatarImageSource = imageSource || source;
 
     if (hasImage) {
       return (
         <ImageContainer
           animate={animate}
           style={[this.getContainerStyle(), StyleSheet.absoluteFillObject, imageStyle]}
-          source={imageSource}
+          source={avatarImageSource}
           onLoadStart={onImageLoadStart}
           onLoadEnd={onImageLoadEnd}
           onError={onImageLoadError}
@@ -296,6 +300,7 @@ export default class Avatar extends PureBaseComponent {
     const {
       label,
       labelColor: color,
+      source,
       imageSource,
       backgroundColor,
       onPress,
@@ -303,20 +308,30 @@ export default class Avatar extends PureBaseComponent {
       children,
       size,
       testID,
+      forwardedRef
     } = this.props;
     const Container = onPress ? TouchableOpacity : View;
-    const hasImage = !_.isUndefined(imageSource);
+    const hasImage = !_.isUndefined(imageSource) || !_.isUndefined(source);
     const fontSizeToImageSizeRatio = 0.32;
     const fontSize = size * fontSizeToImageSizeRatio;
 
     return (
-      <Container style={[this.getContainerStyle(), containerStyle]} testID={testID} onPress={onPress}>
+      <Container
+        style={[this.getContainerStyle(), containerStyle]}
+        ref={forwardedRef}
+        testID={testID}
+        onPress={onPress}
+        accessible={!_.isUndefined(onPress)}
+        accessibilityLabel={'Avatar'}
+        accessibilityRole={onPress ? 'button' : 'image'}
+        {...this.extractAccessibilityProps()}
+      >
         <View
           style={[this.getInitialsContainer(), {backgroundColor}, hasImage && this.styles.initialsContainerWithInset]}
         >
-          <Text numberOfLines={1} style={[{fontSize}, this.styles.initials, {color}]}>
+          {!_.isUndefined(label) && <Text numberOfLines={1} style={[{fontSize}, this.styles.initials, {color}]}>
             {label}
-          </Text>
+          </Text>}
         </View>
         {this.renderImage()}
         {this.renderBadge()}
@@ -333,18 +348,20 @@ function createStyles({labelColor}) {
       top: 1,
       right: 1,
       bottom: 1,
-      left: 1,
+      left: 1
     },
     initials: {
       color: labelColor,
-      backgroundColor: 'transparent',
+      backgroundColor: 'transparent'
     },
     ribbon: {
       backgroundColor: Colors.blue30,
       paddingHorizontal: 6,
-      paddingVertical: 3,
-    },
+      paddingVertical: 3
+    }
   });
 
   return styles;
 }
+
+export default forwardRef(Avatar);

@@ -37,8 +37,17 @@ class PanDismissibleView extends PureComponent {
     animationOptions: PropTypes.shape({
       speed: PropTypes.number,
       bounciness: PropTypes.number,
-      duration: PropTypes.number,
+      duration: PropTypes.number
     }),
+    /**
+     * Override the default threshold (height/2 and width/2) with different values.
+     */
+    threshold: PropTypes.shape({x: PropTypes.number, y: PropTypes.number}),
+    /**
+     * Allow diagonal dismiss, this is false by default,
+     * since it looks better and most cases.
+     */
+    allowDiagonalDismiss: PropTypes.bool
   };
 
   static defaultProps = {
@@ -46,14 +55,15 @@ class PanDismissibleView extends PureComponent {
       PanningProvider.Directions.UP,
       PanningProvider.Directions.DOWN,
       PanningProvider.Directions.LEFT,
-      PanningProvider.Directions.RIGHT,
+      PanningProvider.Directions.RIGHT
     ],
     animationOptions: {
       speed: DEFAULT_SPEED,
       bounciness: DEFAULT_BOUNCINESS,
-      duration: DEFAULT_DISMISS_ANIMATION_DURATION,
+      duration: DEFAULT_DISMISS_ANIMATION_DURATION
     },
     onDismiss: _.noop,
+    allowDiagonalDismiss: false
   };
 
   constructor(props) {
@@ -74,7 +84,7 @@ class PanDismissibleView extends PureComponent {
     const {
       isPanning: prevIsPanning,
       dragDeltas: prevDragDeltas,
-      swipeDirections: prevSwipeDirections,
+      swipeDirections: prevSwipeDirections
     } = prevProps.context; // eslint-disable-line
     if (isPanning !== prevIsPanning) {
       if (isPanning && !isAnimating) {
@@ -105,10 +115,11 @@ class PanDismissibleView extends PureComponent {
   onLayout = event => {
     if (_.isUndefined(this.height)) {
       const layout = event.nativeEvent.layout;
+      const {threshold} = this.props;
       this.height = layout.height;
-      this.thresholdY = layout.height / 2;
+      this.thresholdY = _.get(threshold, 'y', layout.height / 2);
       this.width = layout.width;
-      this.thresholdX = layout.width / 2;
+      this.thresholdX = _.get(threshold, 'x', layout.width / 2);
       this.initPositions();
     }
   };
@@ -119,7 +130,8 @@ class PanDismissibleView extends PureComponent {
       animTranslateX: new Animated.Value(0),
       animTranslateY: new Animated.Value(0),
       ...extraDataForSetState
-    }, runAfterSetState);
+    },
+    runAfterSetState,);
   };
 
   onPanStart = () => {
@@ -180,23 +192,19 @@ class PanDismissibleView extends PureComponent {
     const toY = -this.top;
     const animations = [];
     if (!_.isUndefined(toX)) {
-      animations.push(
-        Animated.spring(animTranslateX, {
-          toValue: Math.round(toX),
-          speed,
-          bounciness,
-        }),
-      );
+      animations.push(Animated.spring(animTranslateX, {
+        toValue: Math.round(toX),
+        speed,
+        bounciness
+      }),);
     }
 
     if (!_.isUndefined(toY)) {
-      animations.push(
-        Animated.spring(animTranslateY, {
-          toValue: Math.round(toY),
-          speed,
-          bounciness,
-        }),
-      );
+      animations.push(Animated.spring(animTranslateY, {
+        toValue: Math.round(toY),
+        speed,
+        bounciness
+      }),);
     }
 
     this.setState({isAnimating: true}, () => {
@@ -211,13 +219,24 @@ class PanDismissibleView extends PureComponent {
   };
 
   getDismissAnimationDirection = () => {
-    const {swipeDirections, dragDirections} = this.props.context; // eslint-disable-line
+    const {allowDiagonalDismiss} = this.props;
+    const {swipeDirections, swipeVelocities, dragDirections, dragDeltas} = this.props.context; // eslint-disable-line
     const hasHorizontalSwipe = !_.isUndefined(swipeDirections.x);
     const hasVerticalSwipe = !_.isUndefined(swipeDirections.y);
     let isRight;
     let isDown;
 
     if (hasHorizontalSwipe || hasVerticalSwipe) {
+      if (!allowDiagonalDismiss && hasHorizontalSwipe && hasVerticalSwipe) {
+        if (Math.abs(swipeVelocities.y) > Math.abs(swipeVelocities.x)) {
+          isDown = swipeDirections.y === PanningProvider.Directions.DOWN;
+        } else {
+          isRight = swipeDirections.x === PanningProvider.Directions.RIGHT;
+        }
+
+        return {isRight, isDown};
+      }
+      
       if (hasHorizontalSwipe) {
         isRight = swipeDirections.x === PanningProvider.Directions.RIGHT;
       }
@@ -227,11 +246,23 @@ class PanDismissibleView extends PureComponent {
       }
     } else {
       // got here from a drag beyond threshold
-      if (!_.isUndefined(dragDirections.x)) {
+      const hasHorizontalDrag = !_.isUndefined(dragDirections.x);
+      const hasVerticalDrag = !_.isUndefined(dragDirections.y);
+      if (!allowDiagonalDismiss && hasHorizontalDrag && hasVerticalDrag) {
+        if (Math.abs(dragDeltas.y) > Math.abs(dragDeltas.x)) {
+          isDown = dragDirections.y === PanningProvider.Directions.DOWN;
+        } else {
+          isRight = dragDirections.x === PanningProvider.Directions.RIGHT;
+        }
+
+        return {isRight, isDown};
+      }
+
+      if (hasHorizontalDrag) {
         isRight = dragDirections.x === PanningProvider.Directions.RIGHT;
       }
 
-      if (!_.isUndefined(dragDirections.y)) {
+      if (hasVerticalDrag) {
         isDown = dragDirections.y === PanningProvider.Directions.DOWN;
       }
     }
@@ -278,21 +309,17 @@ class PanDismissibleView extends PureComponent {
     }
 
     if (!_.isUndefined(toX)) {
-      animations.push(
-        Animated.timing(animTranslateX, {
-          toValue: Math.round(toX),
-          duration,
-        }),
-      );
+      animations.push(Animated.timing(animTranslateX, {
+        toValue: Math.round(toX),
+        duration
+      }),);
     }
 
     if (!_.isUndefined(toY)) {
-      animations.push(
-        Animated.timing(animTranslateY, {
-          toValue: Math.round(toY),
-          duration,
-        }),
-      );
+      animations.push(Animated.timing(animTranslateY, {
+        toValue: Math.round(toY),
+        duration
+      }),);
     }
 
     this.setState({isAnimating: true}, () => {
@@ -302,8 +329,7 @@ class PanDismissibleView extends PureComponent {
 
   onDismissAnimationFinished = ({finished}) => {
     if (finished) {
-      const {onDismiss} = this.props;
-      onDismiss();
+      _.invoke(this.props, 'onDismiss');
     }
   };
 
@@ -318,8 +344,8 @@ class PanDismissibleView extends PureComponent {
         style={[
           style,
           {
-            transform,
-          },
+            transform
+          }
         ]}
         onLayout={this.onLayout}
       >

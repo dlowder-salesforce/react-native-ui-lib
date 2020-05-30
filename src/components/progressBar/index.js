@@ -32,13 +32,23 @@ export default class ProgressBar extends BaseComponent {
     /**
      * the progress bar container style
      */
-    containerStyle: ViewPropTypes.style,
+    containerStyle: ViewPropTypes.style
   };
 
   static defaultProps = {
     backgroundColor: Colors.dark60,
-    progressBackgroundColor: Colors.dark10,
+    progressBackgroundColor: Colors.dark10
   };
+
+  getAccessibilityProps() {
+    const {progress} = this.props;
+
+    return {
+      accessible: true,
+      accessibilityLabel: `progress bar. ${Math.round(progress)}%`,
+      ...this.extractAccessibilityProps()
+    };
+  }
 
   render() {
     const {height, backgroundColor, progressBackgroundColor, containerStyle, style} = this.props;
@@ -46,7 +56,12 @@ export default class ProgressBar extends BaseComponent {
     const modifiers = this.extractModifierProps();
 
     return (
-      <View height={height} {...modifiers} style={[{backgroundColor}, containerStyle]}>
+      <View
+        height={height}
+        {...modifiers}
+        style={[{backgroundColor}, containerStyle]}
+        {...this.getAccessibilityProps()}
+      >
         <AnimatedScanner
           {...animatedScannerProps}
           backgroundColor={progressBackgroundColor}

@@ -6,7 +6,7 @@ const starIcon = require('../../assets/icons/star.png');
 const COLORS = {
   ORANGE: {name: 'Orange', color: Colors.orange20},
   PURPLE: {name: 'Purple', color: Colors.purple20},
-  GREEN: {name: 'Green', color: Colors.green20},
+  GREEN: {name: 'Green', color: Colors.green20}
 };
 
 export default class RadioButtonScreen extends Component {
@@ -16,7 +16,7 @@ export default class RadioButtonScreen extends Component {
     this.state = {
       color: undefined,
       messageType: undefined,
-      disabledSelectedValue: true,
+      disabledSelectedValue: true
     };
   }
 
@@ -57,7 +57,7 @@ export default class RadioButtonScreen extends Component {
       <View flex useSafeArea bg-dark80>
         <View flex>
           <ScrollView style={{padding: 20}}>
-            <RadioGroup value={this.state.color || null} onValueChange={value => this.setState({color: value})}>
+            <RadioGroup initialValue={this.state.color || null} onValueChange={value => this.setState({color: value})}>
               <Text marginB-20 text60 dark10>
                 Select a color{'\n'}
                 (enum with default value)
@@ -69,7 +69,7 @@ export default class RadioButtonScreen extends Component {
               <Text marginT-10>You chose: {this.state.color ? this.state.color : 'Default'}</Text>
             </RadioGroup>
 
-            <RadioGroup marginT-30 value={this.state.textSide} onValueChange={value => this.setState({textSide: value})}>
+            <RadioGroup marginT-30 initialValue={this.state.textSide} onValueChange={value => this.setState({textSide: value})}>
               <Text marginB-20 text60 dark10>
                 Select text side
               </Text>
@@ -103,9 +103,10 @@ export default class RadioButtonScreen extends Component {
             <TouchableOpacity
               activeOpacity={1}
               onPress={() => this.setState({individualValue: !this.state.individualValue})}
+              accessible={false}
             >
               <View row centerV>
-                <RadioButton selected={this.state.individualValue} label="Individual Radio Button (wrapped)" />
+                <RadioButton selected={this.state.individualValue} label="Individual Radio Button (wrapped)"/>
               </View>
             </TouchableOpacity>
             <View row centerV marginT-10>
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
       },
       android: {
         elevation: 3
-      },
-    }),
-  },
+      }
+    })
+  }
 });

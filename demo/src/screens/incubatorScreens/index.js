@@ -1,6 +1,6 @@
-import {Navigation} from 'react-native-navigation';
 import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
 
-import TabControllerScreen from './TabControllerScreen';
-
-Navigation.registerComponent('unicorn.incubator.TabControllerScreen', () => gestureHandlerRootHOC(TabControllerScreen));
+export function registerScreens(registrar) {
+  registrar('unicorn.incubator.TouchableOpacityScreen', () =>
+    gestureHandlerRootHOC(require('./TouchableOpacityScreen').default));
+}
